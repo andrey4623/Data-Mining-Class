@@ -18,7 +18,7 @@ def get_friends(deep,ids):
             out.write(str(friend)+' ')
             get_friends(deep-1, [friend])
         out.write('\n')
-TOKEN = "a755ff3cd2ab5663cf5e9c2d69d9124b7bb08c0faa36f6e8abf5a8048acac1c898b2548eb8a29f797a8f0"
+TOKEN = ""
 
 groups = [34737049] #Сколковский институт науки и технологий  https://vk.com/skoltech
 
