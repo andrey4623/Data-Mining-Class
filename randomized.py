@@ -277,11 +277,18 @@ f = open('outputnodes.csv','w')
 for x in F:
     f.write(str(abs(x.id)+10000000000)+'\n')
 f.close()
+
 f = open('outputedges.csv','w')
 for x in F:
     for ll in x.getExternalLinks():
         if ll<0:
             f.write(str(abs(x.id)+10000000000)+' '+str(abs(int(ll))+10000000000)+'\n')
+f.close()
+
+f = open('outputinfo.csv','w')
+for x in F:
+    for n in x.nodes:
+            f.write(str(abs(x.id)+10000000000)+' '+str(n.id)+'\n')
 f.close()
 
 #output=''
