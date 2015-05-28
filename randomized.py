@@ -280,7 +280,8 @@ f.close()
 f = open('outputedges.csv','w')
 for x in F:
     for ll in x.getExternalLinks():
-        f.write(str(abs(x.id)+10000000000)+' '+str(abs(int(ll))+10000000000)+'\n')
+        if ll<0:
+            f.write(str(abs(x.id)+10000000000)+' '+str(abs(int(ll))+10000000000)+'\n')
 f.close()
 
 #output=''
