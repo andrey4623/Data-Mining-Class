@@ -105,9 +105,12 @@ class Supernode(object):
     
     def getC(self):
         return len(self.getExternalLinks())
-    
-    #def merge(self, anotherSupernode):
-    #    return None
+
+    def getNodesIds(self):
+        list=[]
+        for x in self.nodes:
+            list.append(x.id)
+        return list
     
     def addNode(self, newNode):
         self.nodes.append(newNode)
@@ -139,17 +142,25 @@ class Supernode(object):
 
             for x in tempList:
                 externalLinks.append(x)
-        return externalLinks
+        return set(externalLinks)
 
 
+
+def printGraph(supernodes):
+    
+
+    output=''
+    for supernode in supernodes:
+        output += 'Supernode id='+str(supernode.id)+'; nodes = '+  str(supernode.getNodesIds())  +'; links= '+str(supernode.getExternalLinks())+'\n'
+    print output
 numbernizer=-1
 
 
 #load data from files
-with open('nodes.txt') as f:
+with open('nodes.csv') as f:
     nodesRaw = f.readlines()
 
-with open('edges.txt') as f:
+with open('edges.csv') as f:
     edgesRaw = f.readlines()
 
 supernodes=[]
@@ -157,10 +168,12 @@ F=[]
 
 #create graph
 for x in nodesRaw:
+    x=x.strip()
     x=x.rstrip()
     node = Node(x)
     node.id = x
     for y in edgesRaw:
+       y=y.strip()
        y=y.rstrip()
        temp = y.split()
        if temp[0]==x:
@@ -173,6 +186,7 @@ for x in nodesRaw:
 
 
 #проходим еще раз и меняем int в указателях на ссылки на суперноды
+
 for x in range(0,len(supernodes)):
     for node in range(0,len(supernodes[x].nodes)):
         for link in range(0, len(supernodes[x].nodes[node].externalLinks)):
@@ -182,7 +196,6 @@ for x in range(0,len(supernodes)):
             for x2 in range(0,len(supernodes)):
                 if supernodes[x].nodes[node].externalLinks[link]==supernodes[x2].nodes[0].id:
                     supernodes[x].nodes[node].externalLinks[link] = supernodes[x2].id
-
 
 
 #визуализация загруженного графа
@@ -195,9 +208,9 @@ for x in range(0,len(supernodes)):
 #            print '\t'+str(s.nodes[y].externalLinks[z])
 
 
+
 #algorithm
 while (len(supernodes)>0):
-
     u = random.choice(supernodes)
     
     v = findTheNodeWithTheLargestValueOfS(u)
@@ -218,24 +231,64 @@ while (len(supernodes)>0):
                 w.nodes.append(x)
 
 
+            #теперь надо пройтись по всем супернодам, и если они указывают на v, изменить указатель на u
+            for ss in range(0,len(supernodes)):
+                for nn in range(0,len(supernodes[ss].nodes)):
+                    for ll in range(0,len(supernodes[ss].nodes[nn].externalLinks)):
+                        if supernodes[ss].nodes[nn].externalLinks[ll] == v.id:
+                            supernodes[ss].nodes[nn].externalLinks[ll] = u.id
             supernodes.remove(u)
             supernodes.remove(v)
             supernodes.append(w)
-            print 'merge'
+            #print 'merge'
 
         else:
             
-            print 'move'
+            #print 'move'
             supernodes.remove(u)
             F.append(u)
 
-print 'Result:'
 
-for supernode in F:
-    output = 'Supernode id='+str(supernode.id)+'; nodes= '
-    for node in supernode.nodes:
-        output+=str(node.id)+' '
-    print output
+
+
+
+#print 'Result:'
+#output=''
+#for supernode in F:
+#    output += 'Supernode id='+str(supernode.id)+'; nodes= '
+#    for node in supernode.nodes:
+#        output+=str(node.id)+' '
+#    output+='\n'
+
+
+
+
+
+#if you want to see the result uncomment the next line:
+#printGraph(F)
+
+
+
+#export to file
+
+
+
+f = open('outputnodes.csv','w')
+for x in F:
+    f.write(str(abs(x.id)+10000000000)+'\n')
+f.close()
+f = open('outputedges.csv','w')
+for x in F:
+    for ll in x.getExternalLinks():
+        f.write(str(abs(x.id)+10000000000)+' '+str(abs(int(ll))+10000000000)+'\n')
+f.close()
+
+#output=''
+#    for supernode in supernodes:
+#        output += 'Supernode id='+str(supernode.id)+'; nodes = '+  str(supernode.getNodesIds())  +'; links= '+str(supernode.getExternalLinks())+'\n'
+#    print output
+#f.write('hi there\n') # python will convert \n to os.linesep
+#f.close() # you can omit in most cases as the destructor will call if
 
 
 print 'Completed'
